@@ -62,7 +62,7 @@ class PostSICE:
             print(f"Finished {func.__name__!r} in {run_time:.4f} secs")
             return value
 
-    return wrapper_timer
+        return wrapper_timer
 
     def get_SICE_region_names(self) -> list:
 
