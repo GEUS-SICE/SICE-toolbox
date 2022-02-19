@@ -1,4 +1,4 @@
 [[https://www.gnu.org/licenses/gpl-3.0][https://img.shields.io/badge/License-GPLv3-blue.svg]]
-[[https://github.com/GEUS-SICE/SICE-toolbox/actions][file:https://github.com/GEUS-SICE/SICE-toolbox/workflows/lint_python/badge.svg]]
+[[https://github.com/GEUS-SICE/SICE-toolbox/actions][file:https://github.com/GEUS-SICE/SICE-toolbox/workflows/CI/badge.svg]]
 * SICE-toolbox
 A toolbox containing methods for the post-processing, the analysis and the visualisation of SICE outputs.
