@@ -26,13 +26,25 @@ import functools
 
 
 class PostSICE:
+    """_summary_
+    """
     def __init__(
         self,
         dataset_path: str,
         regions: Union[list, None] = ["Greenland"],
         variables: list = ["albedo_bb_planar_sw", "snow_specific_surface_area"],
     ) -> None:
+        """_summary_
 
+        :param dataset_path: _description_
+        :type dataset_path: str
+        :param regions: _description_, defaults to ["Greenland"]
+        :type regions: Union[list, None], optional
+        :param variables: _description_, defaults to ["albedo_bb_planar_sw", "snow_specific_surface_area"]
+        :type variables: list, optional
+        :return: _description_
+        :rtype: _type_
+        """
         self.working_directory = str(pathlib.Path().resolve())
         self.dataset_path = dataset_path
         self.variables = variables
@@ -65,7 +77,11 @@ class PostSICE:
         return wrapper_timer
 
     def get_SICE_region_names(self) -> list:
+        """_summary_
 
+        :return: _description_
+        :rtype: list
+        """
         SICE_masks = glob.glob(f"{self.working_directory}/masks/*_1km.tif")
 
         self.SICE_region_names = [
@@ -75,7 +91,11 @@ class PostSICE:
         return self.SICE_region_names
 
     def get_available_regions(self) -> list:
+        """_summary_
 
+        :return: _description_
+        :rtype: list
+        """
         available_regions = [
             region
             for region in self.SICE_region_names
@@ -93,7 +113,11 @@ class PostSICE:
         return None
 
     def get_files(self) -> dict:
+        """_summary_
 
+        :return: _description_
+        :rtype: dict
+        """
         for region in self.regions:
 
             self.files[region] = {
@@ -106,7 +130,11 @@ class PostSICE:
         return self.files
 
     def get_generic_profiles(self) -> list:
+        """_summary_
 
+        :return: _description_
+        :rtype: list
+        """
         self.generic_profiles = {
             region: rasterio.open(self.files[region][self.variables[0]][0]).profile
             for region in self.regions
@@ -115,7 +143,11 @@ class PostSICE:
         return self.generic_profiles
 
     def get_BBA_combination_files(self) -> list:
+        """_summary_
 
+        :return: _description_
+        :rtype: list
+        """
         for region in self.regions:
 
             self.files[region]["BBA_combination"] = sorted(
@@ -127,7 +159,21 @@ class PostSICE:
     def compute_BBA_combination(
         self, albedo_file, bands: list = ["01", "06", "17", "21"]
     ) -> None:
+        """_summary_
+
+        :param albedo_file: _description_
+        :type albedo_file: _type_
+        :param bands: _description_, defaults to ["01", "06", "17", "21"]
+        :type bands: list, optional
+        """
         def load_rasters_as_list(files):
+            """_summary_
+
+            :param files: _description_
+            :type files: _type_
+            :return: _description_
+            :rtype: _type_
+            """
             data = [rasterio.open(file).read(1) for file in files]
             return data
 
@@ -167,7 +213,13 @@ class PostSICE:
 
     @timer
     def compute_BBA_combinations_multiprocessing(self, nb_cores: int = 4) -> None:
+        """_summary_
 
+        :param nb_cores: _description_, defaults to 4
+        :type nb_cores: int, optional
+        :return: _description_
+        :rtype: _type_
+        """
         all_albedo_files = [
             self.files[region]["albedo_bb_planar_sw"]
             for region, values in self.files.items()
@@ -179,7 +231,13 @@ class PostSICE:
         return None
 
     def prepare_Lx_multiprocessing(self, variable: str) -> dict:
+        """_summary_
 
+        :param variable: _description_
+        :type variable: str
+        :return: _description_
+        :rtype: dict
+        """
         multiprocessing_partitions = {}
 
         for region in self.regions:
@@ -199,6 +257,11 @@ class PostSICE:
         return multiprocessing_partitions
 
     def compute_Lx_product(self, files_to_process: list) -> None:
+        """_summary_
+
+        :param files_to_process: _description_
+        :type files_to_process: list
+        """
         def compute_L3_step(
             data_stack_arr: list,
             i: int,
@@ -206,7 +269,21 @@ class PostSICE:
             deviation_threshold: float = 0.15,
             limit_valid_days: int = 4,
         ) -> Union[np.ndarray, None]:
+            """_summary_
 
+            :param data_stack_arr: _description_
+            :type data_stack_arr: list
+            :param i: _description_
+            :type i: int
+            :param rolling_window: _description_, defaults to 10
+            :type rolling_window: int, optional
+            :param deviation_threshold: _description_, defaults to 0.15
+            :type deviation_threshold: float, optional
+            :param limit_valid_days: _description_, defaults to 4
+            :type limit_valid_days: int, optional
+            :return: _description_
+            :rtype: Union[np.ndarray, None]
+            """
             if (
                 i < rolling_window / 2
                 or i > np.shape(data_stack_arr)[-1] - rolling_window / 2
@@ -298,7 +375,17 @@ class PostSICE:
     def compute_Lx_products_multiprocessing(
         self, level: int = 2, nb_cores: int = 4, Lx_variables: Union[None, str] = None
     ):
+        """_summary_
 
+        :param level: _description_, defaults to 2
+        :type level: int, optional
+        :param nb_cores: _description_, defaults to 4
+        :type nb_cores: int, optional
+        :param Lx_variables: _description_, defaults to None
+        :type Lx_variables: Union[None, str], optional
+        :return: _description_
+        :rtype: _type_
+        """
         if not Lx_variables:
             Lx_variables = self.variables
         self.level = level
@@ -315,4 +402,9 @@ class PostSICE:
         return None
 
     def compute_bare_ice_area(self):
+        """_summary_
+
+        :return: _description_
+        :rtype: _type_
+        """
         return None
