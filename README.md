@@ -1,2 +1,2 @@
 # SICE-toolbox
-A toolbox containing scripts for the post-processing (e.g. the computation of monthly grids) and the visualisation of SICE outputs.
+A toolbox containing methods for the post-processing, the analysis and the visualisation of SICE outputs.
